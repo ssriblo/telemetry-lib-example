@@ -1,9 +1,12 @@
 #include "telemetry_utils.h"
+#include "Arduino.h"
 
 uint32_t emplace(TM_msg* m, char * buf, size_t bufSize)
 {
-  if(m->type != TM_string)
+  if(m->type != TM_string){
+    Serial.println("TM_String wrong...");
     return 0;
+  }
 
   uint32_t size = m->size;
 

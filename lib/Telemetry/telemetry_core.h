@@ -10,8 +10,8 @@
 // #define OUTGOING_BUFFER_SIZE 128
 
 // my Test for long string
-#define INCOMING_BUFFER_SIZE 1000
-#define OUTGOING_BUFFER_SIZE 1000
+#define INCOMING_BUFFER_SIZE 2048
+#define OUTGOING_BUFFER_SIZE 2048
 #define TOPIC_BUFFER_SIZE 64
 
 void attach(const char * name, void (*callback)(TM_msg * m));

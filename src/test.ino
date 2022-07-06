@@ -1,21 +1,9 @@
-/*********
- * Testing firmware should be developed:
-- Sender: sends data packets with random payload. Should be sent different types of packets, one by one: normal, damaged header (1 random byte replaced with random value), damaged payload.
-- Receiver: receives a packet, if no errors - writes payload to file (maximum file size is 500kb, if the file is full - it should be overwritten from the beginning).
-
-Should be tested for different modes:
-- 115200 kbps, 1024 payload size.
-- 921600 kbps, 16k payload size.
-
-Required metrics:
-- time of sending a packet (on the Sender side);
-- time of receiving packet and writing payload to file (on the Receiver side).
-*********/
-
 /********************************************************
  * Changes at Telemetry Library:
  * - Serial => to Serial1 and pins 4,16
- * - 
+ * - // my Test for long string
+ *   #define INCOMING_BUFFER_SIZE 1000
+ *   #define OUTGOING_BUFFER_SIZE 1000
  * 
  * 
  ********************************************************/ 
@@ -157,22 +145,25 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Start...");
   delay(500);
+
+  Serial1.setRxBufferSize(1024);
   TM.begin(115200);
-  String longStr = "12345";
-  for(int i=0; i<100; i++){
-    longStr = longStr + "abdcdf";
+
+
+  char longStr[1024];
+  for(int i=0; i<1024; i++){
+    longStr[i] = (char) i+1;
+    if( longStr[i] == 0 ){
+      longStr[i] = 1;
+    }
   }
-  TM.pub("Hello", longStr.c_str());
+  longStr[1000] = '\0';
+  Serial.printf("strlen(msg)=%d\n", strlen(longStr)); 
+
+  TM.pub("LONGMSG", longStr);
   // delay(1000);  // wait for a second
   TM.pub_f32("throttle", thrTx);
   TM.attach_f32_to("throttle", &thrRx);
-
-// void Telemetry::sub(void (*callback)(TM_state * s, TM_msg * m),
-//                     TM_state* userData)
-// {
-//     subscribe(callback,userData);
-// }
-//   subscribe(callback_str,&state);
 
   TM.sub(callback_str, &state);
   // xTaskCreate(echo_task, "uart_echo_task", ECHO_TASK_STACK_SIZE, NULL, 10, NULL);
@@ -190,6 +181,6 @@ void loop() {
   TM.update();
 
   delay(2000);
-  Serial.printf("thrTx=%f thrRx=%f\n", thrTx, thrRx);
+  Serial.printf(" thrRx=%f\n", thrRx);
 }
 
